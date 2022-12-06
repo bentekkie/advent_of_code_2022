@@ -7,18 +7,16 @@ import (
 )
 
 func main() {
-	part1()
-	part2()
+	b, _ := os.ReadFile("input.txt")
+	input := strings.TrimSpace(string(b))
+	part1(input)
+	part2(input)
 }
 
-func part1() {
-	b, _ := os.ReadFile("input.txt")
-	input := strings.TrimSpace(string(b))
+func part1(input string) {
 	fmt.Printf("Part 1: %d\n", marker(input, 4))
 }
-func part2() {
-	b, _ := os.ReadFile("input.txt")
-	input := strings.TrimSpace(string(b))
+func part2(input string) {
 	fmt.Printf("Part 2: %d\n", marker(input, 14))
 }
 
