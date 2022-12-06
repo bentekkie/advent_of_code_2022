@@ -78,27 +78,9 @@ func getParams(regEx *regexp.Regexp, line string) (paramsMap map[string]string) 
 	return paramsMap
 }
 
-type tower struct {
-	m map[rune][]rune
-}
-
-func newTower(lines []string) *tower {
-	var tr [][]rune
-	for _, line := range lines {
-		tr = append(tr, []rune(line))
-	}
-	tr = transpose(tr)
-	t := &tower{
-		m: map[rune][]rune{},
-	}
-	for _, row := range tr {
-		line := strings.TrimSpace(reverse(row))
-		if len(line) > 0 && !strings.ContainsAny(line, "[]") {
-			lr := []rune(line)
-			t.m[lr[0]] = lr[1:]
-		}
-	}
-	return t
+type move struct {
+	n        int
+	from, to rune
 }
 
 var mvr = regexp.MustCompile(`.*move (?P<num>\d*) from (?P<from>\d) to (?P<to>\d)`)
@@ -117,34 +99,48 @@ func parseMoves(lines []string) []*move {
 	return moves
 }
 
-type move struct {
-	n        int
-	from, to rune
+type tower struct {
+	m map[rune][]rune
+	k []rune
+}
+
+func newTower(lines []string) *tower {
+	var tr [][]rune
+	for _, line := range lines {
+		tr = append(tr, []rune(line))
+	}
+	m := make(map[rune][]rune)
+	k := []rune{}
+	for _, row := range transpose(tr) {
+		line := strings.TrimSpace(string(reverse(row)))
+		if len(line) > 0 && !strings.ContainsAny(line, "[]") {
+			lr := []rune(line)
+			m[lr[0]] = lr[1:]
+			k = append(k, lr[0])
+		}
+	}
+	sort.Slice(k, func(i, j int) bool { return k[i] < k[j] })
+	return &tower{
+		m, k,
+	}
 }
 
 func (t *tower) String() string {
-	s := ""
-	for _, k := range t.Keys() {
-		s += fmt.Sprintf("%s: %s\n", string(k), string(t.m[k]))
+	var s strings.Builder
+	for _, k := range t.k {
+		s.WriteRune(k)
+		s.WriteString(": ")
+		s.WriteString(string(t.m[k]))
 	}
-	return s
+	return s.String()
 }
 
 func (t *tower) Message() string {
 	msg := []rune{}
-	for _, k := range t.Keys() {
+	for _, k := range t.k {
 		msg = append(msg, t.m[k][len(t.m[k])-1])
 	}
 	return string(msg)
-}
-
-func (t *tower) Keys() []rune {
-	keys := []rune{}
-	for k := range t.m {
-		keys = append(keys, k)
-	}
-	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
-	return keys
 }
 
 func (t *tower) ApplyMovePart1(mv *move) {
@@ -161,14 +157,14 @@ func (t *tower) ApplyMovePart2(mv *move) {
 	t.m[mv.from] = t.m[mv.from][:len(t.m[mv.from])-mv.n]
 }
 
-func reverse(runes []rune) string {
+func reverse[T interface{}](runes []T) []T {
 	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
 		runes[i], runes[j] = runes[j], runes[i]
 	}
-	return string(runes)
+	return runes
 }
 
-func transpose[T comparable](slice [][]T) [][]T {
+func transpose[T interface{}](slice [][]T) [][]T {
 	xl := len(slice[0])
 	yl := len(slice)
 	result := make([][]T, xl)
