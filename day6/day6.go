@@ -48,10 +48,8 @@ func marker(input string, n int) int {
 			w.Remove(runes[i-n])
 		}
 		w.Put(r)
-		if i > n-2 {
-			if w.keyCnt == n {
-				return i + 1
-			}
+		if i > n-2 && w.keyCnt == n {
+			return i + 1
 		}
 	}
 	return -1
