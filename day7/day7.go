@@ -43,8 +43,8 @@ func buildTree() (*dir, map[*dir]int) {
 			},
 		},
 	}
-	currentDir := root.dirs["/"]
-	for _, cmd := range cmds[1:] {
+	currentDir := root
+	for _, cmd := range cmds {
 		if cmd.input == "ls" {
 			for _, line := range cmd.output {
 				parts := strings.Split(line, " ")
