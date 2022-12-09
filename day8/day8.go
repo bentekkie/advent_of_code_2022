@@ -100,47 +100,28 @@ func transpose[T interface{}](slice [][]T) [][]T {
 	return result
 }
 
+type direction int
+
+const (
+	up direction = iota
+	down
+	left
+	right
+)
+
+var allDirs = []direction{up, down, left, right}
+
 type treeP2 struct {
-	height                int
-	up, down, left, right *treeP2
+	height int
+	dirs   map[direction]*treeP2
 }
 
-func (t *treeP2) GoUp(h int) int {
+func (t *treeP2) Go(dir direction, h int) int {
 	if t == nil {
 		return 0
 	}
 	if t.height < h {
-		return 1 + t.up.GoUp(h)
-	}
-	return 1
-}
-
-func (t *treeP2) GoDown(h int) int {
-	if t == nil {
-		return 0
-	}
-	if t.height < h {
-		return 1 + t.down.GoDown(h)
-	}
-	return 1
-}
-
-func (t *treeP2) GoLeft(h int) int {
-	if t == nil {
-		return 0
-	}
-	if t.height < h {
-		return 1 + t.left.GoLeft(h)
-	}
-	return 1
-}
-
-func (t *treeP2) GoRight(h int) int {
-	if t == nil {
-		return 0
-	}
-	if t.height < h {
-		return 1 + t.right.GoRight(h)
+		return 1 + t.dirs[dir].Go(dir, h)
 	}
 	return 1
 }
@@ -167,26 +148,30 @@ func part2() {
 	}
 	for i := 0; i < len(trees); i++ {
 		for j := 0; j < len(trees[i]); j++ {
+			dirs := map[direction]*treeP2{}
 			if i > 0 {
-				trees[i][j].up = trees[i-1][j]
+				dirs[up] = trees[i-1][j]
 			}
 			if i < len(trees)-1 {
-				trees[i][j].down = trees[i+1][j]
+				dirs[down] = trees[i+1][j]
 			}
 			if j > 0 {
-				trees[i][j].left = trees[i][j-1]
+				dirs[left] = trees[i][j-1]
 			}
 			if j < len(trees[i])-1 {
-				trees[i][j].right = trees[i][j+1]
+				dirs[right] = trees[i][j+1]
 			}
+			trees[i][j].dirs = dirs
 		}
 	}
 	max := 0
 	for i := 0; i < len(trees); i++ {
 		for j := 0; j < len(trees[i]); j++ {
 			t := trees[i][j]
-			h := trees[i][j].height
-			score := t.up.GoUp(h) * t.down.GoDown(h) * t.left.GoLeft(h) * t.right.GoRight(h)
+			score := 1
+			for _, dir := range allDirs {
+				score *= t.dirs[dir].Go(dir, t.height)
+			}
 			if score > max {
 				max = score
 			}
