@@ -29,27 +29,26 @@ func part1() {
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 		if line == "noop" {
-			last := xs[len(xs)-1]
+			last := xs[len(xs)-1].end
 			xs = append(
 				xs,
 				cycle{
-					during: last.end,
-					end:    last.end,
+					during: last,
+					end:    last,
 				},
 			)
 		} else {
-			parts := strings.Split(line, " ")
-			delta, _ := strconv.Atoi(parts[1])
-			last := xs[len(xs)-1]
+			delta, _ := strconv.Atoi(strings.TrimPrefix(line, "addx "))
+			last := xs[len(xs)-1].end
 			xs = append(
 				xs,
 				cycle{
-					during: last.end,
-					end:    last.end,
+					during: last,
+					end:    last,
 				},
 				cycle{
-					during: last.end,
-					end:    last.end + delta,
+					during: last,
+					end:    last + delta,
 				},
 			)
 		}
@@ -72,27 +71,26 @@ func part2() {
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 		if line == "noop" {
-			last := xs[len(xs)-1]
+			last := xs[len(xs)-1].end
 			xs = append(
 				xs,
 				cycle{
-					during: last.end,
-					end:    last.end,
+					during: last,
+					end:    last,
 				},
 			)
 		} else {
-			parts := strings.Split(line, " ")
-			delta, _ := strconv.Atoi(parts[1])
-			last := xs[len(xs)-1]
+			delta, _ := strconv.Atoi(strings.TrimPrefix(line, "addx "))
+			last := xs[len(xs)-1].end
 			xs = append(
 				xs,
 				cycle{
-					during: last.end,
-					end:    last.end,
+					during: last,
+					end:    last,
 				},
 				cycle{
-					during: last.end,
-					end:    last.end + delta,
+					during: last,
+					end:    last + delta,
 				},
 			)
 		}
