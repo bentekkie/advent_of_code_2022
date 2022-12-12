@@ -102,9 +102,6 @@ func parseMonkeys() map[int]*monkey {
 	for mi := 0; mi < len(ms); mi++ {
 		for mj := 0; mj < len(ms); mj++ {
 			for _, item := range ms[mj].items {
-				if item.worries == nil {
-					item.worries = map[int]int{}
-				}
 				item.worries[mi] = item.origVal % ms[mi].divBy
 			}
 		}
