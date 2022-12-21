@@ -91,6 +91,41 @@ func part1() {
 }
 
 func part2() {
-
-	fmt.Printf("Part 2: Use excel solver :P\n")
+	file, err := os.Open("input.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	names := []string{}
+	maths := []string{}
+	nameToI := map[string]int{}
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line != "" {
+			parts := strings.Split(line, ": ")
+			names = append(names, parts[0])
+			maths = append(maths, parts[1])
+			nameToI[names[len(names)-1]] = len(names) - 1
+		}
+	}
+	output, err := os.Create("out.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer output.Close()
+	for i, name := range names {
+		rparts := strings.Split(maths[i], " ")
+		var formula string
+		if len(rparts) == 1 {
+			formula = rparts[0]
+		} else {
+			if name == "root" {
+				rparts[1] = "-"
+			}
+			formula = fmt.Sprintf("B%d%sB%d", nameToI[rparts[0]]+1, rparts[1], nameToI[rparts[2]]+1)
+		}
+		fmt.Fprintf(output, "%s,=%s\n", name, formula)
+	}
+	fmt.Printf("Part 2: Use excel solver on out.csv with target B%d=0 by changing B%d\n", nameToI["root"]+1, nameToI["humn"]+1)
 }
