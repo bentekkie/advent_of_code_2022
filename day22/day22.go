@@ -344,24 +344,20 @@ func part2() {
 			if tile == nil {
 				continue
 			}
-			right := x + 1
-			if right >= 0 && right < len(tiles[y]) {
-				tile.right = tiles[y][right]
+			if x < len(tiles[y])-1 {
+				tile.right = tiles[y][x+1]
 			}
 
-			left := x - 1
-			if left >= 0 && left < len(tiles[y]) {
-				tile.left = tiles[y][left]
+			if x > 0 {
+				tile.left = tiles[y][x-1]
 			}
 
-			down := y + 1
-			if down >= 0 && down < len(tiles) {
-				tile.down = tiles[down][x]
+			if y < len(tiles)-1 {
+				tile.down = tiles[y+1][x]
 			}
 
-			up := y - 1
-			if up >= 0 && up < len(tiles) {
-				tile.up = tiles[up][x]
+			if y > 0 {
+				tile.up = tiles[y-1][x]
 			}
 		}
 	}
